@@ -111,7 +111,7 @@ def getDifficulty():
   return difficulty
 
 def clearTable(fileName):
-  cols = ['K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T']
+  cols = ['K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X']
   for letter in cols:
     for row in range(1,50): # M -> T
       sheet[f'{letter}{row}'].value = ''
@@ -191,6 +191,24 @@ def getMinDifficulty(start, end):
 
   return minLvl
 
+def DRTMisses(withRBs):
+  # print(intervals)
+  misses = []
+  for i in range(0,len(intervals)):
+    count = 0
+    for row in range (intervals[i][0], intervals[i][1]):
+      if(withRBs == "Y" or withRBs == "y"):
+        # This needs testing
+        col_val = sheet[f'I{row}'].value
+      else:
+        col_val = sheet[f'H{row}'].value
+      if(col_val != 0):
+        count += 1
+    
+    misses.append(count)
+    
+  return misses
+
 def addTableValues(fileName, withRBs):
 
   # This adds the first summary table 
@@ -199,12 +217,14 @@ def addTableValues(fileName, withRBs):
   sheet['L2'].value = 'Crashes for that period'
   sheet['M2'].value = 'RB crashes for that period'
   sheet['N2'].value = 'Average response time'
-  sheet['O2'].value = 'Difficulty Level'
+  sheet['O2'].value = 'DRT Misses'
+  sheet['P2'].value = 'Difficulty Level'
 
   # Calculations for the first summary table
   crashes = calcCrashes()
   rbs = rbCrashes()
   avg_resp = calcResponseTimeAvg(withRBs)
+  misses = DRTMisses(withRBs)
   difficulty = getDifficulty()
 
   row = 3
@@ -216,72 +236,75 @@ def addTableValues(fileName, withRBs):
     else:
       sheet[f'M{row}'].value = -1
     sheet[f'N{row}'].value = avg_resp[i]
-    sheet[f'O{row}'].value = difficulty[i]
+    sheet[f'O{row}'].value = misses[i]
+    sheet[f'P{row}'].value = difficulty[i]
 
     row += 1
   
   # This adds the second summary table 
-  sheet['R1'].value = '0-119.99'
-  sheet['U1'].value = '120-300'
-  sheet['Q2'].value = 'Participant Id'
-  sheet['R2'].value = 'Total Crashes'
-  sheet['S2'].value = 'Mean DRT'
-  sheet['T2'].value = 'SD DRT'
-  sheet['U2'].value = 'Total crashes'
-  sheet['V2'].value = 'Mean DRT'
-  sheet['W2'].value = 'SD DRT'
+  sheet['S1'].value = '0-119.99'
+  sheet['V1'].value = '120-300'
+  sheet['R2'].value = 'Participant Id'
+  sheet['S2'].value = 'Total Crashes'
+  sheet['T2'].value = 'Mean DRT'
+  sheet['U2'].value = 'SD DRT'
+  sheet['V2'].value = 'Total crashes'
+  sheet['W2'].value = 'Mean DRT'
+  sheet['X2'].value = 'SD DRT'
 
   # Participant Id
   participantId = fileName[fileName.index("-")+1:fileName.rindex("-")]
-  sheet['Q3'].value = participantId
+  sheet['R3'].value = participantId
 
   # 0-119.99 Number of Crashes
   firstHalfCrashes = getHalfCrashes(3, 15)
-  sheet['R3'].value = firstHalfCrashes
+  sheet['S3'].value = firstHalfCrashes
 
   # 0-119.99 Mean DRT
   firstHalfDRT = getHalfDRT(3, 15)
-  sheet['S3'].value = firstHalfDRT
+  sheet['T3'].value = firstHalfDRT
   
   # 0-119.99 SD DRT
   firstHalfSD = getHalfSD(3, 15)
-  sheet['T3'].value = firstHalfSD
+  sheet['U3'].value = firstHalfSD
   
   # 120-300 Number of Crashes
   secondHalfCrashes = getHalfCrashes(15, 33)
-  sheet['U3'].value = secondHalfCrashes
+  sheet['V3'].value = secondHalfCrashes
   
   # 120-300 Mean DRT
   secondHalfDRT = getHalfDRT(15, 33)
-  sheet['V3'].value = secondHalfDRT
+  sheet['W3'].value = secondHalfDRT
 
   # 120-300 SD DRT
   secondHalfSD = getHalfSD(15, 33)
-  sheet['W3'].value = secondHalfSD
+  sheet['X3'].value = secondHalfSD
 
   # This will add the min/max difficulties to the file
-  sheet['R5'].value = '0-119.99'
-  sheet['U5'].value = '120-300'
-  sheet['R6'].value = 'Max Difficulty Lvl'
-  sheet['S6'].value = 'Average Difficulty Lvl'
-  sheet['U6'].value = 'Max Difficulty Lvl'
-  sheet['V6'].value = 'Average Difficulty Lvl'
-  sheet['W6'].value = 'Min Difficulty Lvl'
+  sheet['S5'].value = '0-119.99'
+  sheet['V5'].value = '120-300'
+  sheet['S6'].value = 'Max Difficulty Lvl'
+  sheet['T6'].value = 'Average Difficulty Lvl'
+  sheet['V6'].value = 'Max Difficulty Lvl'
+  sheet['W6'].value = 'Average Difficulty Lvl'
+  sheet['X6'].value = 'Min Difficulty Lvl'
 
   # Gets the max difficulty for first half
-  sheet['R7'].value = getMaxDifficulty(0, 12)
+  sheet['S7'].value = getMaxDifficulty(0, 12)
 
   # Gets the average difficulty for first half
-  sheet['S7'].value = getAverageDifficultyLevel(0, 12)
+  sheet['T7'].value = getAverageDifficultyLevel(0, 12)
 
   # Gets the max difficulty for second half
-  sheet['U7'].value = getMaxDifficulty(12, len(intervals))
+  sheet['V7'].value = getMaxDifficulty(12, len(intervals))
 
   # Gets the average difficulty for second half
-  sheet['V7'].value = getAverageDifficultyLevel(12, len(intervals))
+  sheet['W7'].value = getAverageDifficultyLevel(12, len(intervals))
 
   # Gets the average difficulty for second half
-  sheet['W7'].value = getMinDifficulty(12, len(intervals))
+  sheet['X7'].value = getMinDifficulty(12, len(intervals))
+
+  print(DRTMisses(withRBs))
 
   wb.save(fileName)
 
