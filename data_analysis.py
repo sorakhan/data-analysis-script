@@ -148,6 +148,49 @@ def getHalfSD(start, end):
   sd = math.sqrt(deviations/(count-1))
   return sd
 
+def getMaxDifficulty(start, end):
+  maxLvl = 0
+  # For each 10 second interval
+  for i in range(start, end):
+    # For each row in that interval
+    for row in range (intervals[i][0], intervals[i][1]):
+      col_val = sheet[f'C{row}'].value
+      # Find the maximum difficulty level
+      if (col_val != 0):
+        if(col_val > maxLvl):
+          maxLvl = col_val
+
+  return maxLvl
+
+def getAverageDifficultyLevel(start, end):
+  count = 0.0
+  total = 0
+  for i in range(start, end):
+    for row in range (intervals[i][0], intervals[i][1]):
+      col_val = sheet[f'C{row}'].value
+      if (col_val != 0):
+        count += 1
+        total += col_val
+
+  if (count != 0):
+    total = total / count
+      
+  return total
+
+def getMinDifficulty(start, end):
+  minLvl = 10
+  # For each 10 second interval
+  for i in range(start, end):
+    # For each row in that interval
+    for row in range (intervals[i][0], intervals[i][1]):
+      col_val = sheet[f'C{row}'].value
+      # Find the min difficulty level
+      if (col_val != 0):
+        if(col_val < minLvl):
+          minLvl = col_val
+
+  return minLvl
+
 def addTableValues(fileName, withRBs):
 
   # This adds the first summary table 
@@ -215,6 +258,30 @@ def addTableValues(fileName, withRBs):
   # 120-300 SD DRT
   secondHalfSD = getHalfSD(15, 33)
   sheet['W3'].value = secondHalfSD
+
+  # This will add the min/max difficulties to the file
+  sheet['R5'].value = '0-119.99'
+  sheet['U5'].value = '120-300'
+  sheet['R6'].value = 'Max Difficulty Lvl'
+  sheet['S6'].value = 'Average Difficulty Lvl'
+  sheet['U6'].value = 'Max Difficulty Lvl'
+  sheet['V6'].value = 'Average Difficulty Lvl'
+  sheet['W6'].value = 'Min Difficulty Lvl'
+
+  # Gets the max difficulty for first half
+  sheet['R7'].value = getMaxDifficulty(0, 12)
+
+  # Gets the average difficulty for first half
+  sheet['S7'].value = getAverageDifficultyLevel(0, 12)
+
+  # Gets the max difficulty for second half
+  sheet['U7'].value = getMaxDifficulty(12, len(intervals))
+
+  # Gets the average difficulty for second half
+  sheet['V7'].value = getAverageDifficultyLevel(12, len(intervals))
+
+  # Gets the average difficulty for second half
+  sheet['W7'].value = getMinDifficulty(12, len(intervals))
 
   wb.save(fileName)
 
