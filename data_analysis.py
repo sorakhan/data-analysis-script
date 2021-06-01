@@ -192,7 +192,6 @@ def getMinDifficulty(start, end):
   return minLvl
 
 def DRTMisses(withRBs):
-  # print(intervals)
   misses = []
   for i in range(0,len(intervals)):
     count = 0
@@ -303,8 +302,6 @@ def addTableValues(fileName, withRBs):
 
   # Gets the average difficulty for second half
   sheet['X7'].value = getMinDifficulty(12, len(intervals))
-
-  print(DRTMisses(withRBs))
 
   wb.save(fileName)
 
